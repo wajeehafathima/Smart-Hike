@@ -1,77 +1,90 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Alert } from "react-bootstrap";
 import { Button } from "react-bootstrap";
+import Container from '@mui/material/Container';
+import { TextField } from '@mui/material/';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { useUserAuth } from "../context/UserAuthContext";
 import GoogleButton from "react-google-button";
+import '../css/LoginCSS.scss';
+import SmartHikeHeaderBar from "./SmartHikeHeaderBar";
 
 const Login = () => {
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
-    const [err, setErr] = useState();
-    const { login, googleSignIn } = useUserAuth() || {};
-    const navigate = useNavigate();
-    const handleLogin = async (e) =>{
-      e.preventDefault();
-      setErr("");
-      try {
-          await login(email, password);
-          navigate("/preference")
-      } catch (err) {
-          setErr(err.message)
-      }
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [err, setErr] = useState();
+  const { login, googleSignIn } = useUserAuth() || {};
+  const navigate = useNavigate();
+  var sha256 = require('js-sha256').sha256;
+
+  const settingError = () => {
+    setErr("Incorrect Login credentials");
   }
+
+  const validateLoginDetails = (loginDetails) => {
+    if (loginDetails.email.length == 0 || loginDetails.password.length == 0) {
+      return false;
+    }
+    return true;
+  }
+
+  const handleLogin = async (e) =>{
+    e.preventDefault();
+    const loginFormData = { email: email, password: password };
+    setErr("");
+    if (!validateLoginDetails(loginFormData)) {
+      setErr("Please enter a valid email/password");
+    } 
+    else {
+      try {
+        await login(email, password);
+        navigate("/")
+      } 
+      catch (err) {
+        settingError();
+      }
+    }
+  }
+
   const handleGoogleSignIn = async (e) =>{
     e.preventDefault();
     setErr("");
     try {
         await googleSignIn();
-        navigate("/preference")
-    } catch (err) {
+        navigate("/")
+    } 
+    catch (err) {
         setErr(err.message)
     }
-}
+  }
+
   return (
     <>
-      <div data-testid="login-page" className="p-4 box">
-        <h2 className="mb-3">Firebase Auth Login</h2>
-        {err && <Alert variant="danger">{err}</Alert>}
-        <Form data-testid="login-form" onSubmit={ handleLogin }>
-          <Form.Group data-testid="login-basic-email" className="mb-3" controlId="formBasicEmail">
-            <Form.Control
-              type="email"
-              placeholder="Email address"
-              onChange={ (e) => setEmail(e.target.value) }/>
-          </Form.Group>
-
-          <Form.Group data-testid="login-basic-password" className="mb-3" controlId="formBasicPassword">
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              onChange={ (e) => setPassword(e.target.value) }/>
-          </Form.Group>
-          <br />
-          <div className="d-grid gap-2">
-            <Button data-testid="login-button" variant="primary" type="Submit">
-              Log In
-            </Button>
-          </div>
-          <br />
-          <div className="p-4 box mt-3 text-center">
-            <Link to="/forgotPassword">Forgot Password</Link>
-          </div>
-          <br />
-          <div className="text-center">
-            <GoogleButton data-testid="google-login-button" onClick={handleGoogleSignIn}/>
-          </div>
-          <br />
-          <div className="p-4 box mt-3 text-center">
-            Don't have an account? <Link data-testid = "link-to-signup" to="/signup">Sign up</Link>
-          </div>
-        </Form>
-        <hr />
-      </div>
-      
+      <div>
+        <SmartHikeHeaderBar />
+            <Container>
+                <Paper elevation={2} className='login-paper' >
+                    <Typography align="center" variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <h2>Login</h2>
+                    </Typography>
+                    <form className='login-form' noValidate autoComplete='off'>
+                        <TextField type='email' label='Email' variant='outlined' fullWidth value={email}
+                            onChange={(e) => setEmail(e.target.value)} className="small-margin-below" />
+                        <TextField label='Password' type='password' variant='outlined' fullWidth value={password}
+                            onChange={(e) => setPassword(e.target.value)} className="small-margin-below" />
+                        <Button variant="outlined" onClick={handleLogin} className="small-margin-below">Login</Button>
+                        <Button variant="outlined" onClick={() => navigate("/signup")} className="small-margin-below">Register</Button>
+                        <br></br>
+                        <Link to="/forgotPassword">Forgot Password</Link>
+                        <br></br>
+                        <br></br>
+                        <GoogleButton data-testid="google-login-button" onClick={handleGoogleSignIn}/>
+                    </form>
+                    {err}
+                </Paper>
+            </Container>
+        </div>      
     </>
   );
 };

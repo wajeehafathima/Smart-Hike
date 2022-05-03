@@ -1,6 +1,7 @@
 import './App.css';
 
 import { Container, Row, Col } from 'react-bootstrap';
+import Home from "./components/Home"
 import Login from "./components/Login"
 import Signup from "./components/Signup"
 import { Routes, Route } from "react-router-dom"
@@ -16,7 +17,8 @@ function App() {
         <Col>
         <UserAuthContextProvider>
           <Routes>
-            <Route path = "/" element = {<Login />} />
+            <Route path = "/" element = {<Home />} />
+            <Route path = "/login" element = {<Login />} />
             <Route path = "/signup" element = {<Signup />} />
             <Route path = "/preference" element = {<ProtectedRoute> <PreferenceForm /> </ProtectedRoute>} />  
             <Route path="/forgotPassword" element={ <ForgotPassword /> } />         

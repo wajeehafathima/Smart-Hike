@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Form, Alert } from "react-bootstrap";
 import { Button } from "react-bootstrap";
+import Container from '@mui/material/Container';
+import { TextField } from '@mui/material/';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { useUserAuth } from "../context/UserAuthContext";
-import '../css/PreferenceCSS.scss';
+import GoogleButton from "react-google-button";
+import SmartHikeHeaderBar from "./SmartHikeHeaderBar";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState();
@@ -22,34 +26,35 @@ const ForgotPassword = () => {
   }
   return (
     <>
-      <div className="p-4 box">
-        <h1 className="center">Forgot Password</h1>
-        {err && <Alert variant="danger">{err}</Alert>}
-        {message && <Alert variant="success">{message}</Alert>}
-        <Form onSubmit={ handleLogin }>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Control
-              type="email"
-              placeholder="Email address"
-              onChange={ (e) => setEmail(e.target.value) }/>
-          </Form.Group>
-          <br />
-          <div className="d-grid gap-2">
-            <Button variant="primary" type="Submit">
-              Reset Password
-            </Button>
-          </div>
-          <br />
-          <div className="p-4 box mt-3 text-center">
-            <Link to="/">Login</Link>
-          </div>
-          <br />
-          <div className="p-4 box mt-3 text-center">
-            Don't have an account? <Link to="/signup">Sign up</Link>
-          </div>
-        </Form>
-      </div>
-      
+      <div>
+        <SmartHikeHeaderBar />
+            <Container>
+                <Paper elevation={2} className='login-paper' >
+                    <Typography align="center" variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <h2>Forgot Password?</h2>
+                    </Typography>
+                    <form className='login-form' noValidate autoComplete='off'>
+                      {err}
+                      <TextField type='email' label='Email' variant='outlined' fullWidth value={email}
+                            onChange={(e) => setEmail(e.target.value)} className="small-margin-below" />
+                      <div className="d-grid gap-2">
+                        <Button variant="primary" type="Submit" onSubmit={handleLogin}>
+                          Reset Password
+                        </Button>
+                      </div>
+                      <br />
+                      <div className="p-4 box mt-3 text-center">
+                        <Link to="/login">Login</Link>
+                      </div>
+                      <br />
+                      <div className="p-4 box mt-3 text-center">
+                        Don't have an account? <Link to="/signup">Sign up</Link>
+                      </div>
+                    </form>
+                    {err}
+                </Paper>
+            </Container>
+        </div>      
     </>
   );
 };
